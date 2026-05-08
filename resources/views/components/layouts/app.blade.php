@@ -56,9 +56,33 @@
         </div>
     </header>
 
-    <main class="max-w-2xl mx-auto px-4 py-6">
+    <main class="max-w-2xl mx-auto px-4 py-6 pb-24">
         {{ $slot }}
     </main>
+
+    {{-- Bottom navigation --}}
+    <nav class="fixed bottom-0 inset-x-0 z-10 bg-white dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+        <div class="max-w-2xl mx-auto px-4 flex">
+            <a href="{{ route('transactions.index') }}" wire:navigate
+                class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition
+                    {{ request()->routeIs('transactions.*') ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
+                        clip-rule="evenodd" />
+                </svg>
+                Transactions
+            </a>
+            <a href="{{ route('accounts.index') }}" wire:navigate
+                class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition
+                    {{ request()->routeIs('accounts.*') ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
+                </svg>
+                Accounts
+            </a>
+        </div>
+    </nav>
 
     @livewireScripts
 </body>

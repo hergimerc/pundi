@@ -3,6 +3,8 @@
 use App\Http\Controllers\Auth\LoginController;
 use App\Livewire\Accounts\Create as AccountsCreate;
 use App\Livewire\Accounts\Index as AccountsIndex;
+use App\Livewire\Transactions\Create as TransactionsCreate;
+use App\Livewire\Transactions\Index as TransactionsIndex;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -13,7 +15,9 @@ Route::middleware('guest')->group(function () {
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->middleware('auth');
 
 Route::middleware('auth')->group(function () {
-    Route::get('/', fn () => redirect()->route('accounts.index'));
+    Route::get('/', fn () => redirect()->route('transactions.index'));
     Route::livewire('/accounts', AccountsIndex::class)->name('accounts.index');
     Route::livewire('/accounts/create', AccountsCreate::class)->name('accounts.create');
+    Route::livewire('/transactions', TransactionsIndex::class)->name('transactions.index');
+    Route::livewire('/transactions/create', TransactionsCreate::class)->name('transactions.create');
 });
