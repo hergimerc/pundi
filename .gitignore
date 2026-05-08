@@ -1,4 +1,7 @@
 *.log
+.htaccess
+error_log
+public/error_log
 .DS_Store
 .env
 .env.backup
