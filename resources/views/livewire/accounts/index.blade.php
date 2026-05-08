@@ -1,7 +1,7 @@
 <div>
     <div class="flex items-center justify-between mb-4">
         <h1 class="text-lg font-semibold">Accounts</h1>
-        <button
+        <a href="{{ route('accounts.create') }}" wire:navigate
             class="inline-flex items-center gap-1.5 rounded-lg bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 px-3 py-2 text-sm font-medium text-white hover:bg-zinc-700 dark:hover:bg-zinc-300 transition cursor-pointer">
             <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
@@ -9,7 +9,7 @@
                     clip-rule="evenodd" />
             </svg>
             Add
-        </button>
+        </a>
     </div>
 
     @php

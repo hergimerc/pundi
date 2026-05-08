@@ -4,9 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ $title ?? config('app.name', 'Pundi') }}</title>
-    {{-- Apply saved theme before paint to avoid flash --}}
+    {{-- Apply saved theme before paint and after every wire:navigate --}}
     <script>
-        if (localStorage.theme === 'dark') document.documentElement.classList.add('dark');
+        function applyTheme() {
+            if (localStorage.theme === 'dark') {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        }
+        applyTheme();
+        document.addEventListener('livewire:navigated', applyTheme);
     </script>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

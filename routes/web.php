@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\LoginController;
+use App\Livewire\Accounts\Create as AccountsCreate;
 use App\Livewire\Accounts\Index as AccountsIndex;
 use Illuminate\Support\Facades\Route;
 
@@ -14,4 +15,5 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout')->midd
 Route::middleware('auth')->group(function () {
     Route::get('/', fn () => redirect()->route('accounts.index'));
     Route::livewire('/accounts', AccountsIndex::class)->name('accounts.index');
+    Route::livewire('/accounts/create', AccountsCreate::class)->name('accounts.create');
 });
