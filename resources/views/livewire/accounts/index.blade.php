@@ -49,7 +49,7 @@
                     <div class="space-y-2">
                         @foreach ($group->sortByDesc('is_active') as $account)
                             <a wire:key="account-{{ $account->id }}" wire:navigate
-                                href="{{ route('accounts.edit', $account) }}"
+                                href="{{ route('accounts.show', $account) }}"
                                 class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-4 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition {{ $account->is_active ? '' : 'opacity-50' }}">
                                 <div class="size-10 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-semibold"
                                     style="background-color: {{ $account->color ?? '#71717a' }}">

@@ -25,7 +25,7 @@
 - [x] Delete transaction (soft delete with balance reversal via observer)
 
 ### Accounts
-- [ ] accounts.edit — edit name, type, color, is_active
+- [x] accounts.edit — edit name, type, color, is_active
 - [ ] accounts.show — account detail with its transaction history
 
 ### Transfers

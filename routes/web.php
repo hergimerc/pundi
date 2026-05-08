@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Livewire\Accounts\Create as AccountsCreate;
 use App\Livewire\Accounts\Edit as AccountsEdit;
 use App\Livewire\Accounts\Index as AccountsIndex;
+use App\Livewire\Accounts\Show as AccountsShow;
 use App\Livewire\Transactions\Create as TransactionsCreate;
 use App\Livewire\Transactions\Edit as TransactionsEdit;
 use App\Livewire\Transactions\Index as TransactionsIndex;
@@ -21,6 +22,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/', fn () => redirect()->route('transactions.index'));
     Route::livewire('/accounts', AccountsIndex::class)->name('accounts.index');
     Route::livewire('/accounts/create', AccountsCreate::class)->name('accounts.create');
+    Route::get('/accounts/{account}', AccountsShow::class)->name('accounts.show');
     Route::get('/accounts/{account}/edit', AccountsEdit::class)->name('accounts.edit');
     Route::livewire('/transactions', TransactionsIndex::class)->name('transactions.index');
     Route::livewire('/transactions/create', TransactionsCreate::class)->name('transactions.create');
