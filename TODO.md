@@ -20,9 +20,9 @@
 ## Remaining
 
 ### Transactions
-- [ ] transactions.edit — edit existing transaction (amount, type, category, account, date, note)
-- [ ] transactions.show — transaction detail view with delete action
-- [ ] Delete transaction (soft delete with balance reversal via observer)
+- [x] transactions.edit — edit existing transaction (amount, type, category, account, date, note)
+- [x] transactions.show — transaction detail view with delete action
+- [x] Delete transaction (soft delete with balance reversal via observer)
 
 ### Accounts
 - [ ] accounts.edit — edit name, type, color, is_active

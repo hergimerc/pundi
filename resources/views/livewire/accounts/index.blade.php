@@ -48,8 +48,9 @@
 
                     <div class="space-y-2">
                         @foreach ($group->sortByDesc('is_active') as $account)
-                            <div wire:key="account-{{ $account->id }}"
-                                class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-4 flex items-center gap-4 {{ $account->is_active ? '' : 'opacity-50' }}">
+                            <a wire:key="account-{{ $account->id }}" wire:navigate
+                                href="{{ route('accounts.edit', $account) }}"
+                                class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-4 flex items-center gap-4 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition {{ $account->is_active ? '' : 'opacity-50' }}">
                                 <div class="size-10 rounded-full shrink-0 flex items-center justify-center text-white text-sm font-semibold"
                                     style="background-color: {{ $account->color ?? '#71717a' }}">
                                     {{ strtoupper(substr($account->name, 0, 1)) }}
@@ -69,7 +70,7 @@
                                         Rp {{ number_format($account->current_balance, 0, ',', '.') }}
                                     </p>
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
