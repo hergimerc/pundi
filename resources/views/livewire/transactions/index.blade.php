@@ -90,8 +90,9 @@
                     {{-- Transaction rows --}}
                     <div class="space-y-2">
                         @foreach ($dayTransactions as $transaction)
-                            <div wire:key="tx-{{ $transaction->id }}"
-                                class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-3">
+                            <a wire:key="tx-{{ $transaction->id }}" wire:navigate
+                                href="{{ route('transactions.edit', $transaction) }}"
+                                class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition">
                                 {{-- Category dot --}}
                                 <div class="size-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-semibold"
                                     style="background-color: {{ $transaction->category->color ?? '#71717a' }}">
@@ -119,7 +120,7 @@
                                         {{ number_format($transaction->amount, 0, ',', '.') }}
                                     </p>
                                 </div>
-                            </div>
+                            </a>
                         @endforeach
                     </div>
                 </div>
