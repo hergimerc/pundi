@@ -39,10 +39,10 @@
 - [x] Delete transfer (reverse both balances)
 
 ### Categories
-- [ ] categories.index — list with parent/child tree structure
-- [ ] categories.create — name, type, color, parent (optional)
-- [ ] categories.edit
-- [ ] Delete category (soft delete; historical transactions keep the reference)
+- [x] categories.index — list with parent/child tree structure
+- [x] categories.create — name, type, color, parent (optional)
+- [x] categories.edit
+- [x] Delete category (soft delete; historical transactions keep the reference)
 
 ### Budgets
 - [ ] Budget model, migration, pivot table (budget_category)
