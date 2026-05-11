@@ -9,6 +9,7 @@ use App\Livewire\Transactions\Create as TransactionsCreate;
 use App\Livewire\Transactions\Edit as TransactionsEdit;
 use App\Livewire\Transactions\Index as TransactionsIndex;
 use App\Livewire\Transactions\Show as TransactionsShow;
+use App\Livewire\Transfers\Show as TransfersShow;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -28,4 +29,5 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/transactions/create', TransactionsCreate::class)->name('transactions.create');
     Route::get('/transactions/{transaction}', TransactionsShow::class)->name('transactions.show');
     Route::get('/transactions/{transaction}/edit', TransactionsEdit::class)->name('transactions.edit');
+    Route::get('/transfers/{transfer}', TransfersShow::class)->name('transfers.show');
 });

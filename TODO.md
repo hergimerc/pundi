@@ -26,16 +26,17 @@
 
 ### Accounts
 - [x] accounts.edit — edit name, type, color, is_active
-- [ ] accounts.show — account detail with its transaction history
+- [x] accounts.show — account detail with its transaction history
 
 ### Transfers
-- [ ] Transfer model, migration, seeder
-- [ ] TransferService — execute() and reverse(), always inside DB::transaction()
+- [x] Transfer model, migration, seeder
+- [x] TransferService — execute() and reverse(), always inside DB::transaction()
   - Deduct amount + fee from from_account
   - Add amount (no fee) to to_account
-- [ ] transfers.index — list of transfers
-- [ ] transfers.create — from/to account picker, amount, fee, date, note
-- [ ] Delete transfer (reverse both balances)
+- [x] transfers shown in transactions.index (merged, gray amount)
+- [x] transfers.create merged into transactions.create as a third tab
+- [x] transfers.show — detail with delete action
+- [x] Delete transfer (reverse both balances)
 
 ### Categories
 - [ ] categories.index — list with parent/child tree structure
@@ -60,7 +61,7 @@
 
 ### Services (backend only, no UI yet)
 - [ ] TransactionService — create/update/delete with validation
-- [ ] TransferService — (see Transfers above)
+- [x] TransferService — (see Transfers above)
 - [ ] ReportService
 - [ ] BudgetReportService
 

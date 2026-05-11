@@ -8,35 +8,36 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\Transaction;
+use App\Services\TransferService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
-use Livewire\Attributes\Validate;
 use Livewire\Component;
 
 #[Layout('components.layouts.app')]
 #[Title('New Transaction')]
 class Create extends Component
 {
-    #[Validate('required|in:expense,income')]
     public string $type = 'expense';
 
-    #[Validate('required|numeric|min:1|max:999999999999.99')]
     public string $amount = '';
 
-    #[Validate('required|exists:accounts,id')]
+    public string $transacted_at = '';
+
+    // Transaction fields
     public string $account_id = '';
 
-    #[Validate('required|exists:categories,id')]
     public string $category_id = '';
 
-    #[Validate('nullable|string|max:255')]
     public string $note = '';
 
-    #[Validate('nullable|string|max:1000')]
     public ?string $description = null;
 
-    #[Validate('required|date')]
-    public string $transacted_at = '';
+    // Transfer fields
+    public string $from_account_id = '';
+
+    public string $to_account_id = '';
+
+    public string $fee = '0';
 
     public function mount(): void
     {
@@ -48,23 +49,51 @@ class Create extends Component
         $this->category_id = '';
     }
 
-    public function save(): void
+    public function save(TransferService $service): void
     {
-        $this->validate();
+        if ($this->type === 'transfer') {
+            $this->validate([
+                'amount' => 'required|numeric|min:1|max:999999999999.99',
+                'from_account_id' => 'required|exists:accounts,id|different:to_account_id',
+                'to_account_id' => 'required|exists:accounts,id|different:from_account_id',
+                'fee' => 'nullable|numeric|min:0|max:999999999999.99',
+                'note' => 'nullable|string|max:500',
+                'transacted_at' => 'required|date',
+            ]);
 
-        $noteModel = $this->note !== ''
-            ? Note::firstOrCreate(['content' => $this->note])
-            : null;
+            $service->execute([
+                'from_account_id' => (int) $this->from_account_id,
+                'to_account_id' => (int) $this->to_account_id,
+                'amount' => (float) $this->amount,
+                'fee' => (float) ($this->fee ?: 0),
+                'note' => $this->note ?: null,
+                'transferred_at' => $this->transacted_at,
+            ]);
+        } else {
+            $this->validate([
+                'type' => 'required|in:expense,income',
+                'amount' => 'required|numeric|min:1|max:999999999999.99',
+                'account_id' => 'required|exists:accounts,id',
+                'category_id' => 'required|exists:categories,id',
+                'note' => 'nullable|string|max:255',
+                'description' => 'nullable|string|max:1000',
+                'transacted_at' => 'required|date',
+            ]);
 
-        Transaction::create([
-            'type' => TransactionType::from($this->type),
-            'account_id' => (int) $this->account_id,
-            'category_id' => (int) $this->category_id,
-            'note_id' => $noteModel?->id,
-            'amount' => (float) $this->amount,
-            'description' => $this->description ?: null,
-            'transacted_at' => $this->transacted_at,
-        ]);
+            $noteModel = $this->note !== ''
+                ? Note::firstOrCreate(['content' => $this->note])
+                : null;
+
+            Transaction::create([
+                'type' => TransactionType::from($this->type),
+                'account_id' => (int) $this->account_id,
+                'category_id' => (int) $this->category_id,
+                'note_id' => $noteModel?->id,
+                'amount' => (float) $this->amount,
+                'description' => $this->description ?: null,
+                'transacted_at' => $this->transacted_at,
+            ]);
+        }
 
         $this->redirectRoute('transactions.index', navigate: true);
     }
@@ -73,7 +102,7 @@ class Create extends Component
     {
         $categoryType = $this->type === 'income' ? CategoryType::Income : CategoryType::Expense;
 
-        $noteSuggestions = strlen($this->note) >= 1
+        $noteSuggestions = $this->type !== 'transfer' && strlen($this->note) >= 1
             ? Note::where('content', 'like', '%'.$this->note.'%')->orderBy('content')->limit(8)->pluck('content')
             : collect();
 

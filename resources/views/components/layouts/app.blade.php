@@ -73,7 +73,7 @@
                 </svg>
                 Transactions
             </a>
-            <a href="{{ route('accounts.index') }}" wire:navigate
+<a href="{{ route('accounts.index') }}" wire:navigate
                 class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition
                     {{ request()->routeIs('accounts.*') ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">

@@ -54,14 +54,14 @@
         </div>
     </div>
 
-    {{-- Transactions grouped by date --}}
+    {{-- Items grouped by date --}}
     @if ($grouped->isEmpty())
         <div class="text-center py-16 text-zinc-400 dark:text-zinc-500">
-            <p class="text-sm">No transactions this month.</p>
+            <p class="text-sm">No activity this month.</p>
         </div>
     @else
         <div class="space-y-5">
-            @foreach ($grouped as $date => $dayTransactions)
+            @foreach ($grouped as $date => $dayItems)
                 <div>
                     {{-- Date label --}}
                     <div class="flex items-center justify-between mb-2 px-1">
@@ -75,8 +75,9 @@
                         </p>
                         <div class="flex items-center gap-2 text-xs font-medium">
                             @php
-                                $dayIncome = (float) $dayTransactions->where('type', \App\Enums\TransactionType::Income)->sum('amount');
-                                $dayExpense = (float) $dayTransactions->where('type', \App\Enums\TransactionType::Expense)->sum('amount');
+                                $dayTx = $dayItems->filter(fn ($i) => $i instanceof \App\Models\Transaction);
+                                $dayIncome = (float) $dayTx->where('type', \App\Enums\TransactionType::Income)->sum('amount');
+                                $dayExpense = (float) $dayTx->where('type', \App\Enums\TransactionType::Expense)->sum('amount');
                             @endphp
                             @if ($dayIncome > 0)
                                 <span class="text-emerald-500">+Rp {{ number_format($dayIncome, 0, ',', '.') }}</span>
@@ -87,40 +88,74 @@
                         </div>
                     </div>
 
-                    {{-- Transaction rows --}}
+                    {{-- Rows --}}
                     <div class="space-y-2">
-                        @foreach ($dayTransactions as $transaction)
-                            <a wire:key="tx-{{ $transaction->id }}" wire:navigate
-                                href="{{ route('transactions.show', $transaction) }}"
-                                class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition">
-                                {{-- Category dot --}}
-                                <div class="size-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-semibold"
-                                    style="background-color: {{ $transaction->category->color ?? '#71717a' }}">
-                                    {{ strtoupper(substr($transaction->category->name, 0, 1)) }}
-                                </div>
+                        @foreach ($dayItems as $item)
+                            @if ($item instanceof \App\Models\Transfer)
+                                <a wire:key="tf-{{ $item->id }}" wire:navigate
+                                    href="{{ route('transfers.show', $item) }}"
+                                    class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition">
+                                    {{-- Transfer icon --}}
+                                    <div class="size-9 rounded-full shrink-0 flex items-center justify-center bg-zinc-100 dark:bg-zinc-700 text-zinc-500 dark:text-zinc-400">
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 20 20" fill="currentColor">
+                                            <path d="M8 5a1 1 0 100 2h5.586l-1.293 1.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L13.586 5H8zM12 15a1 1 0 100-2H6.414l1.293-1.293a1 1 0 10-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L6.414 15H12z" />
+                                        </svg>
+                                    </div>
 
-                                {{-- Info --}}
-                                <div class="flex-1 min-w-0">
-                                    <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
-                                        {{ $transaction->category->name }}
-                                    </p>
-                                    <p class="text-xs text-zinc-400 dark:text-zinc-500 truncate mt-0.5">
-                                        {{ $transaction->account->name }}
-                                        @if ($transaction->note)
-                                            · {{ $transaction->note->content }}
+                                    {{-- Info --}}
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                                            {{ $item->fromAccount->name }}
+                                            <span class="text-zinc-400 dark:text-zinc-500 font-normal">→</span>
+                                            {{ $item->toAccount->name }}
+                                        </p>
+                                        @if ($item->note)
+                                            <p class="text-xs text-zinc-400 dark:text-zinc-500 truncate mt-0.5">{{ $item->note }}</p>
                                         @endif
-                                    </p>
-                                </div>
+                                    </div>
 
-                                {{-- Amount --}}
-                                <div class="shrink-0 text-right">
-                                    <p
-                                        class="text-sm font-semibold {{ $transaction->type === \App\Enums\TransactionType::Income ? 'text-emerald-500' : 'text-zinc-900 dark:text-zinc-100' }}">
-                                        {{ $transaction->type === \App\Enums\TransactionType::Income ? '+' : '-' }}Rp
-                                        {{ number_format($transaction->amount, 0, ',', '.') }}
-                                    </p>
-                                </div>
-                            </a>
+                                    {{-- Amount --}}
+                                    <div class="shrink-0 text-right">
+                                        <p class="text-sm font-semibold text-zinc-400 dark:text-zinc-500">
+                                            Rp {{ number_format($item->amount, 0, ',', '.') }}
+                                        </p>
+                                        @if ($item->fee > 0)
+                                            <p class="text-xs text-red-400 mt-0.5">+Rp {{ number_format($item->fee, 0, ',', '.') }} fee</p>
+                                        @endif
+                                    </div>
+                                </a>
+                            @else
+                                <a wire:key="tx-{{ $item->id }}" wire:navigate
+                                    href="{{ route('transactions.show', $item) }}"
+                                    class="bg-white dark:bg-zinc-800 rounded-2xl px-4 py-3 flex items-center gap-3 hover:bg-zinc-50 dark:hover:bg-zinc-700/60 transition">
+                                    {{-- Category dot --}}
+                                    <div class="size-9 rounded-full shrink-0 flex items-center justify-center text-white text-xs font-semibold"
+                                        style="background-color: {{ $item->category->color ?? '#71717a' }}">
+                                        {{ strtoupper(substr($item->category->name, 0, 1)) }}
+                                    </div>
+
+                                    {{-- Info --}}
+                                    <div class="flex-1 min-w-0">
+                                        <p class="text-sm font-medium text-zinc-900 dark:text-zinc-100 truncate">
+                                            {{ $item->category->name }}
+                                        </p>
+                                        <p class="text-xs text-zinc-400 dark:text-zinc-500 truncate mt-0.5">
+                                            {{ $item->account->name }}
+                                            @if ($item->note)
+                                                · {{ $item->note->content }}
+                                            @endif
+                                        </p>
+                                    </div>
+
+                                    {{-- Amount --}}
+                                    <div class="shrink-0 text-right">
+                                        <p class="text-sm font-semibold {{ $item->type === \App\Enums\TransactionType::Income ? 'text-emerald-500' : 'text-zinc-900 dark:text-zinc-100' }}">
+                                            {{ $item->type === \App\Enums\TransactionType::Income ? '+' : '-' }}Rp
+                                            {{ number_format($item->amount, 0, ',', '.') }}
+                                        </p>
+                                    </div>
+                                </a>
+                            @endif
                         @endforeach
                     </div>
                 </div>

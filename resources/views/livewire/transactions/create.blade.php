@@ -29,9 +29,16 @@
                         : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
                 Income
             </button>
+            <button type="button" wire:click="$set('type', 'transfer')"
+                class="flex-1 py-2 rounded-lg text-sm font-medium transition
+                    {{ $type === 'transfer'
+                        ? 'bg-white dark:bg-zinc-700 text-zinc-900 dark:text-zinc-100 shadow-sm'
+                        : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                Transfer
+            </button>
         </div>
 
-        {{-- Amount --}}
+        {{-- Amount (shared) --}}
         <div>
             <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Amount</label>
             <div class="relative" x-data="{
@@ -52,45 +59,100 @@
             @enderror
         </div>
 
-        {{-- Category --}}
-        <div>
-            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Category</label>
-            <select wire:model="category_id"
-                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
-                <option value="">Select category</option>
-                @foreach ($categories as $parent)
-                    @if ($parent->children->isNotEmpty())
-                        <optgroup label="{{ $parent->name }}">
-                            @foreach ($parent->children as $child)
-                                <option value="{{ $child->id }}">{{ $child->name }}</option>
-                            @endforeach
-                        </optgroup>
-                    @else
-                        <option value="{{ $parent->id }}">{{ $parent->name }}</option>
-                    @endif
-                @endforeach
-            </select>
-            @error('category_id')
-                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
+        @if ($type === 'transfer')
+            {{-- From account --}}
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">From</label>
+                <select wire:model="from_account_id"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                    <option value="">Select account</option>
+                    @foreach ($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @endforeach
+                </select>
+                @error('from_account_id')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
-        {{-- Account --}}
-        <div>
-            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Account</label>
-            <select wire:model="account_id"
-                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
-                <option value="">Select account</option>
-                @foreach ($accounts as $account)
-                    <option value="{{ $account->id }}">{{ $account->name }}</option>
-                @endforeach
-            </select>
-            @error('account_id')
-                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
+            {{-- To account --}}
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">To</label>
+                <select wire:model="to_account_id"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                    <option value="">Select account</option>
+                    @foreach ($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @endforeach
+                </select>
+                @error('to_account_id')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
 
-        {{-- Date & Time --}}
+            {{-- Fee --}}
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Fee
+                    <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
+                </label>
+                <div class="relative" x-data="{
+                    update(e) {
+                        const digits = e.target.value.replace(/\D/g, '');
+                        e.target.value = digits ? digits.replace(/\B(?=(\d{3})+(?!\d))/g, '.') : '';
+                        $wire.$set('fee', digits || '0');
+                    }
+                }">
+                    <span
+                        class="absolute inset-y-0 left-4 flex items-center text-sm font-medium text-zinc-400 dark:text-zinc-500 pointer-events-none">Rp</span>
+                    <input type="text" inputmode="numeric" @input="update($event)"
+                        class="w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600"
+                        placeholder="0" />
+                </div>
+                @error('fee')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+        @else
+            {{-- Category --}}
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Category</label>
+                <select wire:model="category_id"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                    <option value="">Select category</option>
+                    @foreach ($categories as $parent)
+                        @if ($parent->children->isNotEmpty())
+                            <optgroup label="{{ $parent->name }}">
+                                @foreach ($parent->children as $child)
+                                    <option value="{{ $child->id }}">{{ $child->name }}</option>
+                                @endforeach
+                            </optgroup>
+                        @else
+                            <option value="{{ $parent->id }}">{{ $parent->name }}</option>
+                        @endif
+                    @endforeach
+                </select>
+                @error('category_id')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Account --}}
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Account</label>
+                <select wire:model="account_id"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                    <option value="">Select account</option>
+                    @foreach ($accounts as $account)
+                        <option value="{{ $account->id }}">{{ $account->name }}</option>
+                    @endforeach
+                </select>
+                @error('account_id')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+        @endif
+
+        {{-- Date & Time (shared) --}}
         <div>
             <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Date & Time</label>
             <input type="datetime-local" wire:model="transacted_at"
@@ -100,55 +162,65 @@
             @enderror
         </div>
 
-        {{-- Note --}}
+        {{-- Note (shared, autocomplete only for expense/income) --}}
         <div>
             <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Note
                 <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
             </label>
-            <div x-data="{ open: false }" class="relative">
-                <input type="text" wire:model.live.debounce.300ms="note" maxlength="255"
-                    @focus="open = true"
-                    @blur="setTimeout(() => open = false, 150)"
-                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600"
-                    placeholder="e.g. Monthly salary" />
 
-                @if ($noteSuggestions->isNotEmpty())
-                    <ul x-show="open"
-                        class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg overflow-hidden">
-                        @foreach ($noteSuggestions as $suggestion)
-                            <li>
-                                <button type="button"
-                                    @mousedown.prevent="$wire.$set('note', @js($suggestion)); open = false"
-                                    class="w-full text-left px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition">
-                                    {{ $suggestion }}
-                                </button>
-                            </li>
-                        @endforeach
-                    </ul>
-                @endif
-            </div>
+            @if ($type === 'transfer')
+                <input type="text" wire:model="note" maxlength="500"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600"
+                    placeholder="e.g. Monthly savings" />
+            @else
+                <div x-data="{ open: false }" class="relative">
+                    <input type="text" wire:model.live.debounce.300ms="note" maxlength="255"
+                        @focus="open = true"
+                        @blur="setTimeout(() => open = false, 150)"
+                        class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600"
+                        placeholder="e.g. Monthly salary" />
+
+                    @if ($noteSuggestions->isNotEmpty())
+                        <ul x-show="open"
+                            class="absolute z-20 w-full mt-1 bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 rounded-xl shadow-lg overflow-hidden">
+                            @foreach ($noteSuggestions as $suggestion)
+                                <li>
+                                    <button type="button"
+                                        @mousedown.prevent="$wire.$set('note', @js($suggestion)); open = false"
+                                        class="w-full text-left px-4 py-2.5 text-sm text-zinc-900 dark:text-zinc-100 hover:bg-zinc-50 dark:hover:bg-zinc-700 transition">
+                                        {{ $suggestion }}
+                                    </button>
+                                </li>
+                            @endforeach
+                        </ul>
+                    @endif
+                </div>
+            @endif
+
             @error('note')
                 <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
             @enderror
         </div>
 
-        {{-- Description --}}
-        <div>
-            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Description
-                <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
-            </label>
-            <textarea wire:model="description" rows="2" maxlength="1000"
-                class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600 resize-none"
-                placeholder="Any extra details…"></textarea>
-            @error('description')
-                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-            @enderror
-        </div>
+        {{-- Description (expense/income only) --}}
+        @if ($type !== 'transfer')
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Description
+                    <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
+                </label>
+                <textarea wire:model="description" rows="2" maxlength="1000"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500 placeholder-zinc-300 dark:placeholder-zinc-600 resize-none"
+                    placeholder="Any extra details…"></textarea>
+                @error('description')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+        @endif
 
         {{-- Submit --}}
         <button type="submit"
             class="w-full py-3.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-300 transition">
-            <span wire:loading.remove>Save Transaction</span>
+            <span wire:loading.remove>{{ $type === 'transfer' ? 'Save Transfer' : 'Save Transaction' }}</span>
             <span wire:loading>Saving…</span>
         </button>
 

@@ -4,6 +4,7 @@ namespace App\Livewire\Transactions;
 
 use App\Enums\TransactionType;
 use App\Models\Transaction;
+use App\Models\Transfer;
 use Carbon\Carbon;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -39,11 +40,20 @@ class Index extends Component
         $transactions = Transaction::with(['account', 'category', 'note'])
             ->whereYear('transacted_at', $month->year)
             ->whereMonth('transacted_at', $month->month)
-            ->orderByDesc('transacted_at')
-            ->orderByDesc('id')
             ->get();
 
-        $grouped = $transactions->groupBy(fn ($t) => $t->transacted_at->toDateString());
+        $transfers = Transfer::with(['fromAccount', 'toAccount'])
+            ->whereYear('transferred_at', $month->year)
+            ->whereMonth('transferred_at', $month->month)
+            ->get();
+
+        $grouped = $transactions->concat($transfers)
+            ->sortByDesc(fn ($item) => $item instanceof Transaction
+                ? $item->transacted_at->format('Y-m-d H:i:s')
+                : $item->transferred_at->format('Y-m-d H:i:s'))
+            ->groupBy(fn ($item) => $item instanceof Transaction
+                ? $item->transacted_at->toDateString()
+                : $item->transferred_at->toDateString());
 
         $totalIncome = (float) $transactions->where('type', TransactionType::Income)->sum('amount');
         $totalExpense = (float) $transactions->where('type', TransactionType::Expense)->sum('amount');
