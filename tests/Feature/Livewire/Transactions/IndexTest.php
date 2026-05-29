@@ -205,4 +205,68 @@ class IndexTest extends TestCase
             ->test(Index::class)
             ->assertSee('-Rp');
     }
+
+    public function test_load_more_button_appears_when_more_than_10_day_groups(): void
+    {
+        // EarliestDay on day 1 will be the 11th group (oldest, sorted last) — hidden initially
+        $earliest = Category::factory()->expense()->create(['name' => 'EarliestDay']);
+        $recent = Category::factory()->expense()->create(['name' => 'RecentDay']);
+
+        Transaction::factory()->expense()->create([
+            'category_id' => $earliest->id,
+            'transacted_at' => now()->startOfMonth()->addDays(0), // day 1
+        ]);
+
+        // Days 2–11 (10 more distinct days, sorted descending they appear first)
+        for ($day = 2; $day <= 11; $day++) {
+            Transaction::factory()->expense()->create([
+                'category_id' => $recent->id,
+                'transacted_at' => now()->startOfMonth()->addDays($day - 1),
+            ]);
+        }
+
+        Livewire::actingAs($this->user)
+            ->test(Index::class)
+            ->assertSee('RecentDay')
+            ->assertDontSee('EarliestDay')
+            ->assertSee('Load more');
+    }
+
+    public function test_load_more_increases_visible_days(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(Index::class)
+            ->assertSet('visibleDays', 10)
+            ->call('loadMore')
+            ->assertSet('visibleDays', 20);
+    }
+
+    public function test_month_navigation_resets_visible_days(): void
+    {
+        Livewire::actingAs($this->user)
+            ->test(Index::class)
+            ->call('loadMore')
+            ->assertSet('visibleDays', 20)
+            ->call('previousMonth')
+            ->assertSet('visibleDays', 10)
+            ->call('loadMore')
+            ->call('nextMonth')
+            ->assertSet('visibleDays', 10);
+    }
+
+    public function test_summary_totals_cover_full_month_regardless_of_visible_days(): void
+    {
+        // Create transactions on 12 distinct days
+        for ($day = 1; $day <= 12; $day++) {
+            Transaction::factory()->expense()->create([
+                'amount' => 10_000,
+                'transacted_at' => now()->startOfMonth()->addDays($day - 1),
+            ]);
+        }
+
+        // With only 10 visible days, the summary should still show the full 120,000
+        Livewire::actingAs($this->user)
+            ->test(Index::class)
+            ->assertSee('120.000');
+    }
 }

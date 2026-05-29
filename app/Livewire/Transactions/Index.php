@@ -18,6 +18,8 @@ class Index extends Component
     #[Url(as: 'month')]
     public string $currentMonth;
 
+    public int $visibleDays = 10;
+
     public function mount(): void
     {
         $this->currentMonth = now()->format('Y-m');
@@ -26,11 +28,18 @@ class Index extends Component
     public function previousMonth(): void
     {
         $this->currentMonth = Carbon::parse($this->currentMonth.'-01')->subMonth()->format('Y-m');
+        $this->visibleDays = 10;
     }
 
     public function nextMonth(): void
     {
         $this->currentMonth = Carbon::parse($this->currentMonth.'-01')->addMonth()->format('Y-m');
+        $this->visibleDays = 10;
+    }
+
+    public function loadMore(): void
+    {
+        $this->visibleDays += 10;
     }
 
     public function render()
@@ -60,6 +69,8 @@ class Index extends Component
 
         return view('livewire.transactions.index', [
             'grouped' => $grouped,
+            'visibleDays' => $this->visibleDays,
+            'hasMore' => $grouped->count() > $this->visibleDays,
             'totalIncome' => $totalIncome,
             'totalExpense' => $totalExpense,
             'month' => $month,

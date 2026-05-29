@@ -61,7 +61,7 @@
         </div>
     @else
         <div class="space-y-5">
-            @foreach ($grouped as $date => $dayItems)
+            @foreach ($grouped->take($visibleDays) as $date => $dayItems)
                 <div>
                     {{-- Date label --}}
                     <div class="flex items-center justify-between mb-2 px-1">
@@ -161,5 +161,13 @@
                 </div>
             @endforeach
         </div>
+
+        @if ($hasMore)
+            <button type="button" wire:click="loadMore"
+                class="w-full mt-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm font-medium text-zinc-500 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+                <span wire:loading.remove wire:target="loadMore">Load more</span>
+                <span wire:loading wire:target="loadMore">Loading…</span>
+            </button>
+        @endif
     @endif
 </div>
