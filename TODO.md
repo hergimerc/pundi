@@ -64,7 +64,7 @@
 - [x] ReportService
 
 ### Polish
-- [ ] Attachment support — file upload on transaction create/edit
+- [x] Attachment support — file upload on transaction create/edit
   - Attachment model, migration (transaction_id cascade, file_path, mime_type, size_bytes)
 - [ ] Pagination or infinite scroll on transactions.index for large months
 - [ ] Empty states with helpful CTAs (e.g. "No accounts yet — add one")

@@ -12,11 +12,14 @@ use App\Services\TransferService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('New Transaction')]
 class Create extends Component
 {
+    use WithFileUploads;
+
     public string $type = 'expense';
 
     public string $amount = '';
@@ -31,6 +34,8 @@ class Create extends Component
     public string $note = '';
 
     public ?string $description = null;
+
+    public array $attachments = [];
 
     // Transfer fields
     public string $from_account_id = '';
@@ -78,9 +83,10 @@ class Create extends Component
                 'note' => 'nullable|string|max:255',
                 'description' => 'nullable|string|max:1000',
                 'transacted_at' => 'required|date',
+                'attachments.*' => 'nullable|file|max:10240',
             ]);
 
-            $transactionService->create([
+            $transaction = $transactionService->create([
                 'type' => TransactionType::from($this->type),
                 'account_id' => (int) $this->account_id,
                 'category_id' => (int) $this->category_id,
@@ -89,6 +95,10 @@ class Create extends Component
                 'description' => $this->description ?: null,
                 'transacted_at' => $this->transacted_at,
             ]);
+
+            if ($this->attachments) {
+                $transactionService->storeAttachments($transaction, $this->attachments);
+            }
         }
 
         $this->redirectRoute('transactions.index', navigate: true);

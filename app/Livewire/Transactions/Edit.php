@@ -5,6 +5,7 @@ namespace App\Livewire\Transactions;
 use App\Enums\CategoryType;
 use App\Enums\TransactionType;
 use App\Models\Account;
+use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\Transaction;
@@ -13,11 +14,14 @@ use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 #[Layout('components.layouts.app')]
 #[Title('Edit Transaction')]
 class Edit extends Component
 {
+    use WithFileUploads;
+
     public Transaction $transaction;
 
     #[Validate('required|in:expense,income')]
@@ -41,9 +45,11 @@ class Edit extends Component
     #[Validate('required|date')]
     public string $transacted_at = '';
 
+    public array $newAttachments = [];
+
     public function mount(Transaction $transaction): void
     {
-        $this->transaction = $transaction;
+        $this->transaction = $transaction->load('attachments');
         $this->type = $transaction->type->value;
         $this->amount = (string) (int) $transaction->amount;
         $this->account_id = (string) $transaction->account_id;
@@ -58,9 +64,17 @@ class Edit extends Component
         $this->category_id = '';
     }
 
+    public function removeAttachment(int $id, TransactionService $transactionService): void
+    {
+        $attachment = Attachment::findOrFail($id);
+        $transactionService->deleteAttachment($attachment);
+        $this->transaction->setRelation('attachments', $this->transaction->attachments->except([$id]));
+    }
+
     public function save(TransactionService $transactionService): void
     {
         $this->validate();
+        $this->validateOnly('newAttachments.*', ['newAttachments.*' => 'nullable|file|max:10240']);
 
         $transactionService->update($this->transaction, [
             'type' => TransactionType::from($this->type),
@@ -71,6 +85,10 @@ class Edit extends Component
             'description' => $this->description ?: null,
             'transacted_at' => $this->transacted_at,
         ]);
+
+        if ($this->newAttachments) {
+            $transactionService->storeAttachments($this->transaction, $this->newAttachments);
+        }
 
         $this->redirectRoute('transactions.index', navigate: true);
     }

@@ -151,6 +151,32 @@
             @enderror
         </div>
 
+        {{-- Attachments --}}
+        <div>
+            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Attachments</label>
+
+            @if ($transaction->attachments->isNotEmpty())
+                <div class="bg-white dark:bg-zinc-800 rounded-xl divide-y divide-zinc-100 dark:divide-zinc-700 mb-2">
+                    @foreach ($transaction->attachments as $attachment)
+                        <div class="flex items-center gap-3 px-3 py-2.5">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                            </svg>
+                            <span class="flex-1 text-sm text-zinc-700 dark:text-zinc-300 truncate">{{ $attachment->original_name }}</span>
+                            <button type="button" wire:click="removeAttachment({{ $attachment->id }})"
+                                class="text-red-400 hover:text-red-600 transition text-xs shrink-0">Remove</button>
+                        </div>
+                    @endforeach
+                </div>
+            @endif
+
+            <input type="file" wire:model="newAttachments" multiple accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
+                class="w-full text-sm text-zinc-500 dark:text-zinc-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-zinc-100 dark:file:bg-zinc-700 file:text-zinc-700 dark:file:text-zinc-300 hover:file:bg-zinc-200 dark:hover:file:bg-zinc-600 cursor-pointer" />
+            @error('newAttachments.*')
+                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+            @enderror
+        </div>
+
         {{-- Submit --}}
         <button type="submit"
             class="w-full py-3.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-300 transition">

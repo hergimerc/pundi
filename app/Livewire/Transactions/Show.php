@@ -16,7 +16,7 @@ class Show extends Component
 
     public function mount(Transaction $transaction): void
     {
-        $this->transaction = $transaction->load(['account', 'category', 'note']);
+        $this->transaction = $transaction->load(['account', 'category', 'note', 'attachments']);
     }
 
     public function delete(TransactionService $transactionService): void

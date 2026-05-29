@@ -4,10 +4,13 @@ namespace App\Services;
 
 use App\Enums\CategoryType;
 use App\Enums\TransactionType;
+use App\Models\Attachment;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\Transaction;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use InvalidArgumentException;
 
 class TransactionService
@@ -73,6 +76,27 @@ class TransactionService
     public function delete(Transaction $transaction): void
     {
         $transaction->delete();
+    }
+
+    /** @param UploadedFile[] $files */
+    public function storeAttachments(Transaction $transaction, array $files): void
+    {
+        foreach ($files as $file) {
+            $path = $file->store("attachments/{$transaction->id}", 'public');
+
+            $transaction->attachments()->create([
+                'file_path' => $path,
+                'original_name' => $file->getClientOriginalName(),
+                'mime_type' => $file->getMimeType() ?? $file->getClientMimeType(),
+                'size_bytes' => $file->getSize(),
+            ]);
+        }
+    }
+
+    public function deleteAttachment(Attachment $attachment): void
+    {
+        Storage::disk('public')->delete($attachment->file_path);
+        $attachment->delete();
     }
 
     private function resolveNote(?string $content): ?Note

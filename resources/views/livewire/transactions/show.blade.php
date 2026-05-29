@@ -65,6 +65,24 @@
 
     </div>
 
+    {{-- Attachments --}}
+    @if ($transaction->attachments->isNotEmpty())
+        <div class="bg-white dark:bg-zinc-800 rounded-2xl divide-y divide-zinc-100 dark:divide-zinc-700 mb-6">
+            @foreach ($transaction->attachments as $attachment)
+                <a href="{{ Storage::url($attachment->file_path) }}" target="_blank"
+                    class="flex items-center gap-3 px-5 py-3.5 hover:bg-zinc-50 dark:hover:bg-zinc-700/50 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M8 4a3 3 0 00-3 3v4a5 5 0 0010 0V7a1 1 0 112 0v4a7 7 0 11-14 0V7a5 5 0 0110 0v4a3 3 0 11-6 0V7a1 1 0 012 0v4a1 1 0 102 0V7a3 3 0 00-3-3z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="flex-1 text-sm text-zinc-700 dark:text-zinc-300 truncate">{{ $attachment->original_name }}</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            @endforeach
+        </div>
+    @endif
+
     {{-- Delete --}}
     <div x-data="{ confirming: false }">
         <button type="button" x-show="!confirming" @click="confirming = true"

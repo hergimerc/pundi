@@ -217,6 +217,20 @@
             </div>
         @endif
 
+        {{-- Attachments (expense/income only) --}}
+        @if ($type !== 'transfer')
+            <div>
+                <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Attachments
+                    <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
+                </label>
+                <input type="file" wire:model="attachments" multiple accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx"
+                    class="w-full text-sm text-zinc-500 dark:text-zinc-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-zinc-100 dark:file:bg-zinc-700 file:text-zinc-700 dark:file:text-zinc-300 hover:file:bg-zinc-200 dark:hover:file:bg-zinc-600 cursor-pointer" />
+                @error('attachments.*')
+                    <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                @enderror
+            </div>
+        @endif
+
         {{-- Submit --}}
         <button type="submit"
             class="w-full py-3.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-300 transition">
