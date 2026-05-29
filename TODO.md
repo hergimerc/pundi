@@ -45,25 +45,23 @@
 - [x] Delete category (soft delete; historical transactions keep the reference)
 
 ### Budgets
-- [ ] Budget model, migration, pivot table (budget_category)
-- [ ] Budget::spentAmount(), remainingAmount(), progressPercent()
+- [x] Budget model, migration, pivot table (budget_category)
+- [x] Budget::spentAmount(), remainingAmount(), progressPercent()
   - Must use Category::allDescendantIds() to include subcategory spending
-- [ ] budgets.index — list with progress bars
-- [ ] budgets.create — name, amount, month/year, category picker (multi-select)
-- [ ] budgets.edit
-- [ ] Delete budget (soft delete)
+- [x] budgets.index — list with progress bars, month navigator
+- [x] budgets.create — name, amount, month/year, category picker (multi-select)
+- [x] budgets.edit
+- [x] Delete budget (soft delete)
+- [x] "More" nav button → Settings sheet (Budgets link)
 
 ### Reports
-- [ ] ReportService — monthly/annual summaries by category, account, note
-- [ ] BudgetReportService — spending vs budget per month
-- [ ] reports.index — charts: spending by category, income vs expense over time
-  - Consider using a JS charting library (Chart.js or ApexCharts via CDN)
+- [x] ReportService — monthly/annual summaries by category, account, note
+- [x] reports.index — monthly summary (income/expense/net), category breakdown, annual trend
 
 ### Services (backend only, no UI yet)
 - [ ] TransactionService — create/update/delete with validation
 - [x] TransferService — (see Transfers above)
-- [ ] ReportService
-- [ ] BudgetReportService
+- [x] ReportService
 
 ### Polish
 - [ ] Attachment support — file upload on transaction create/edit

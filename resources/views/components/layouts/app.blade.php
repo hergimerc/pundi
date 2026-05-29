@@ -80,8 +80,19 @@
             </div>
 
             <div class="bg-zinc-100 dark:bg-zinc-700/50 rounded-2xl divide-y divide-zinc-200 dark:divide-zinc-600">
+                <a href="{{ route('reports.index') }}" wire:navigate onclick="closeSettings()"
+                    class="flex items-center gap-3 px-4 py-3.5 rounded-t-2xl hover:bg-zinc-200/60 dark:hover:bg-zinc-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-500 dark:text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2 10a8 8 0 018-8v8h8a8 8 0 11-16 0z" />
+                        <path d="M12 2.252A8.014 8.014 0 0117.748 8H12V2.252z" />
+                    </svg>
+                    <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Reports</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400 dark:text-zinc-500 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
                 <a href="{{ route('budgets.index') }}" wire:navigate onclick="closeSettings()"
-                    class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-zinc-200/60 dark:hover:bg-zinc-700 transition">
+                    class="flex items-center gap-3 px-4 py-3.5 rounded-b-2xl hover:bg-zinc-200/60 dark:hover:bg-zinc-700 transition">
                     <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-500 dark:text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
                     </svg>
