@@ -5,6 +5,9 @@ use App\Livewire\Accounts\Create as AccountsCreate;
 use App\Livewire\Accounts\Edit as AccountsEdit;
 use App\Livewire\Accounts\Index as AccountsIndex;
 use App\Livewire\Accounts\Show as AccountsShow;
+use App\Livewire\Budgets\Create as BudgetsCreate;
+use App\Livewire\Budgets\Edit as BudgetsEdit;
+use App\Livewire\Budgets\Index as BudgetsIndex;
 use App\Livewire\Categories\Create as CategoriesCreate;
 use App\Livewire\Categories\Edit as CategoriesEdit;
 use App\Livewire\Categories\Index as CategoriesIndex;
@@ -36,4 +39,7 @@ Route::middleware('auth')->group(function () {
     Route::livewire('/categories', CategoriesIndex::class)->name('categories.index');
     Route::livewire('/categories/create', CategoriesCreate::class)->name('categories.create');
     Route::get('/categories/{category}/edit', CategoriesEdit::class)->name('categories.edit');
+    Route::livewire('/budgets', BudgetsIndex::class)->name('budgets.index');
+    Route::livewire('/budgets/create', BudgetsCreate::class)->name('budgets.create');
+    Route::get('/budgets/{budget}/edit', BudgetsEdit::class)->name('budgets.edit');
 });

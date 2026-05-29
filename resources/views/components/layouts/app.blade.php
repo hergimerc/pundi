@@ -60,8 +60,57 @@
         {{ $slot }}
     </main>
 
+    {{-- Settings backdrop --}}
+    <div id="settings-backdrop"
+        onclick="closeSettings()"
+        class="fixed inset-0 z-40 bg-black/40 hidden transition-opacity duration-200"></div>
+
+    {{-- Settings sheet --}}
+    <div id="settings-sheet"
+        class="fixed bottom-16 inset-x-0 z-50 hidden bg-white dark:bg-zinc-800 rounded-t-2xl border-t border-zinc-200 dark:border-zinc-700 shadow-xl">
+        <div class="max-w-2xl mx-auto px-4 pt-4 pb-6">
+            <div class="flex items-center justify-between mb-4">
+                <h2 class="text-base font-semibold">Settings</h2>
+                <button type="button" onclick="closeSettings()"
+                    class="size-8 flex items-center justify-center rounded-lg text-zinc-400 hover:bg-zinc-100 dark:hover:bg-zinc-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="bg-zinc-100 dark:bg-zinc-700/50 rounded-2xl divide-y divide-zinc-200 dark:divide-zinc-600">
+                <a href="{{ route('budgets.index') }}" wire:navigate onclick="closeSettings()"
+                    class="flex items-center gap-3 px-4 py-3.5 rounded-2xl hover:bg-zinc-200/60 dark:hover:bg-zinc-700 transition">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-5 text-zinc-500 dark:text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z" />
+                    </svg>
+                    <span class="text-sm font-medium text-zinc-900 dark:text-zinc-100">Budgets</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400 dark:text-zinc-500 ml-auto" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function openSettings() {
+            document.getElementById('settings-sheet').classList.remove('hidden');
+            document.getElementById('settings-backdrop').classList.remove('hidden');
+        }
+        function closeSettings() {
+            document.getElementById('settings-sheet').classList.add('hidden');
+            document.getElementById('settings-backdrop').classList.add('hidden');
+        }
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closeSettings();
+        });
+        document.addEventListener('livewire:navigated', closeSettings);
+    </script>
+
     {{-- Bottom navigation --}}
-    <nav class="fixed bottom-0 inset-x-0 z-10 bg-white dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
+    <nav class="fixed bottom-0 inset-x-0 z-50 bg-white dark:bg-zinc-800 border-t border-zinc-200 dark:border-zinc-700">
         <div class="max-w-2xl mx-auto px-4 flex">
             <a href="{{ route('transactions.index') }}" wire:navigate
                 class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition
@@ -90,6 +139,14 @@
                 </svg>
                 Accounts
             </a>
+            <button type="button" onclick="openSettings()"
+                class="flex-1 flex flex-col items-center gap-1 py-3 text-xs font-medium transition
+                    {{ request()->routeIs('budgets.*') ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500 hover:text-zinc-700 dark:hover:text-zinc-300' }}">
+                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                </svg>
+                More
+            </button>
         </div>
     </nav>
 
