@@ -37,7 +37,8 @@ class IndexTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(Index::class)
-            ->assertSee('No categories yet.');
+            ->assertSee('No categories yet.')
+            ->assertSee('Add your first category');
     }
 
     public function test_shows_expense_categories(): void

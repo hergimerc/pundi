@@ -40,7 +40,8 @@ class IndexTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(Index::class)
-            ->assertSee('No activity this month.');
+            ->assertSee('No activity this month.')
+            ->assertSee('Add a transaction');
     }
 
     public function test_shows_transfers_in_list(): void

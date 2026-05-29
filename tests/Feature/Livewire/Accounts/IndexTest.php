@@ -54,7 +54,8 @@ class IndexTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(Index::class)
-            ->assertSee('No accounts yet.');
+            ->assertSee('No accounts yet.')
+            ->assertSee('Add your first account');
     }
 
     public function test_total_balance_sums_only_active_accounts(): void

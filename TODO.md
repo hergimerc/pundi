@@ -67,6 +67,6 @@
 - [x] Attachment support — file upload on transaction create/edit
   - Attachment model, migration (transaction_id cascade, file_path, mime_type, size_bytes)
 - [x] Pagination or infinite scroll on transactions.index for large months
-- [ ] Empty states with helpful CTAs (e.g. "No accounts yet — add one")
+- [x] Empty states with helpful CTAs (e.g. "No accounts yet — add one")
 - [ ] Flash messages on successful save/delete
 - [ ] Confirm dialog before deleting any record

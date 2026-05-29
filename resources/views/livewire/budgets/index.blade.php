@@ -39,8 +39,12 @@
     </div>
 
     @if ($budgets->isEmpty())
-        <div class="text-center py-16 text-zinc-400 dark:text-zinc-500">
-            <p class="text-sm">No budgets for this month.</p>
+        <div class="text-center py-16">
+            <p class="text-sm text-zinc-400 dark:text-zinc-500 mb-4">No budgets for this month.</p>
+            <a href="{{ route('budgets.create') }}" wire:navigate
+                class="inline-flex items-center gap-1.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 px-4 py-2.5 text-sm font-medium text-white hover:bg-zinc-700 dark:hover:bg-zinc-300 transition">
+                Add a budget
+            </a>
         </div>
     @else
         <div class="space-y-3">

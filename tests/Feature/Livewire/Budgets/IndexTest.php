@@ -41,7 +41,8 @@ class IndexTest extends TestCase
     {
         Livewire::actingAs($this->user)
             ->test(Index::class)
-            ->assertSee('No budgets for this month.');
+            ->assertSee('No budgets for this month.')
+            ->assertSee('Add a budget');
     }
 
     public function test_shows_budgets_for_current_month(): void
