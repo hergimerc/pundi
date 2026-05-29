@@ -54,6 +54,7 @@ class Edit extends Component
 
         $this->budget->categories()->sync($this->categoryIds);
 
+        $this->dispatch('flash', message: 'Budget saved.');
         $this->redirectRoute('budgets.index', navigate: true);
     }
 

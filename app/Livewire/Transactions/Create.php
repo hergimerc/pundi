@@ -101,6 +101,7 @@ class Create extends Component
             }
         }
 
+        $this->dispatch('flash', message: 'Transaction saved.');
         $this->redirectRoute('transactions.index', navigate: true);
     }
 

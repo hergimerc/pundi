@@ -161,6 +161,39 @@
         </div>
     </nav>
 
+    {{-- Flash toast --}}
+    <div id="flash-toast"
+        class="fixed top-16 inset-x-0 z-50 flex justify-center pointer-events-none px-4 transition-all duration-300"
+        style="opacity:0;transform:translateY(-8px)">
+        <div class="bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 text-sm font-medium px-4 py-2.5 rounded-xl shadow-lg max-w-sm w-full text-center">
+            <span id="flash-toast-message"></span>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            let _flashTimer = null;
+
+            function showFlash(message) {
+                const toast = document.getElementById('flash-toast');
+                const msg = document.getElementById('flash-toast-message');
+                if (!toast || !msg) return;
+                msg.textContent = message;
+                toast.style.opacity = '1';
+                toast.style.transform = 'translateY(0)';
+                clearTimeout(_flashTimer);
+                _flashTimer = setTimeout(function () {
+                    toast.style.opacity = '0';
+                    toast.style.transform = 'translateY(-8px)';
+                }, 2500);
+            }
+
+            window.addEventListener('flash', function (e) {
+                showFlash(e.detail.message ?? e.detail[0]?.message ?? '');
+            });
+        })();
+    </script>
+
     @livewireScripts
 </body>
 </html>

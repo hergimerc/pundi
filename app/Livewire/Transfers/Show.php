@@ -23,6 +23,7 @@ class Show extends Component
     {
         $service->reverse($this->transfer);
 
+        $this->dispatch('flash', message: 'Transfer deleted.');
         $this->redirectRoute('transactions.index', navigate: true);
     }
 

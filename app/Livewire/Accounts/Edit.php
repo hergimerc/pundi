@@ -47,6 +47,7 @@ class Edit extends Component
             'is_active' => $this->is_active,
         ]);
 
+        $this->dispatch('flash', message: 'Account saved.');
         $this->redirectRoute('accounts.index', navigate: true);
     }
 

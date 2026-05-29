@@ -37,6 +37,7 @@ class Create extends Component
             'color' => $this->color,
         ]);
 
+        $this->dispatch('flash', message: 'Account saved.');
         $this->redirectRoute('accounts.index', navigate: true);
     }
 

@@ -68,5 +68,5 @@
   - Attachment model, migration (transaction_id cascade, file_path, mime_type, size_bytes)
 - [x] Pagination or infinite scroll on transactions.index for large months
 - [x] Empty states with helpful CTAs (e.g. "No accounts yet — add one")
-- [ ] Flash messages on successful save/delete
+- [x] Flash messages on successful save/delete
 - [ ] Confirm dialog before deleting any record

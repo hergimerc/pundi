@@ -42,6 +42,7 @@ class Create extends Component
             'sort_order' => 0,
         ]);
 
+        $this->dispatch('flash', message: 'Category saved.');
         $this->redirectRoute('categories.index', navigate: true);
     }
 

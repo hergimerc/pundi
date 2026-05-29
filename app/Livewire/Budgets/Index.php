@@ -39,6 +39,7 @@ class Index extends Component
     public function delete(Budget $budget): void
     {
         $budget->delete();
+        $this->dispatch('flash', message: 'Budget deleted.');
     }
 
     public function render()

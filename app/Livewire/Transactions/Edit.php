@@ -90,6 +90,7 @@ class Edit extends Component
             $transactionService->storeAttachments($this->transaction, $this->newAttachments);
         }
 
+        $this->dispatch('flash', message: 'Transaction saved.');
         $this->redirectRoute('transactions.index', navigate: true);
     }
 

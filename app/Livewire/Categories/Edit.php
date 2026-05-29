@@ -41,6 +41,7 @@ class Edit extends Component
             'parent_id' => $this->parent_id !== '' ? (int) $this->parent_id : null,
         ]);
 
+        $this->dispatch('flash', message: 'Category saved.');
         $this->redirectRoute('categories.index', navigate: true);
     }
 

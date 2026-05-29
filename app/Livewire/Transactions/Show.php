@@ -23,6 +23,7 @@ class Show extends Component
     {
         $transactionService->delete($this->transaction);
 
+        $this->dispatch('flash', message: 'Transaction deleted.');
         $this->redirectRoute('transactions.index', navigate: true);
     }
 

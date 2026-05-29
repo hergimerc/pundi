@@ -21,6 +21,7 @@ class Index extends Component
         }
 
         $category->delete();
+        $this->dispatch('flash', message: 'Category deleted.');
     }
 
     public function render()
