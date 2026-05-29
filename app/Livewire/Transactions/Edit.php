@@ -8,6 +8,7 @@ use App\Models\Account;
 use App\Models\Category;
 use App\Models\Note;
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Attributes\Validate;
@@ -57,19 +58,15 @@ class Edit extends Component
         $this->category_id = '';
     }
 
-    public function save(): void
+    public function save(TransactionService $transactionService): void
     {
         $this->validate();
 
-        $noteModel = $this->note !== ''
-            ? Note::firstOrCreate(['content' => $this->note])
-            : null;
-
-        $this->transaction->update([
+        $transactionService->update($this->transaction, [
             'type' => TransactionType::from($this->type),
             'account_id' => (int) $this->account_id,
             'category_id' => (int) $this->category_id,
-            'note_id' => $noteModel?->id,
+            'note' => $this->note ?: null,
             'amount' => (float) $this->amount,
             'description' => $this->description ?: null,
             'transacted_at' => $this->transacted_at,

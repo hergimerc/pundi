@@ -3,6 +3,7 @@
 namespace App\Livewire\Transactions;
 
 use App\Models\Transaction;
+use App\Services\TransactionService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
 use Livewire\Component;
@@ -18,9 +19,9 @@ class Show extends Component
         $this->transaction = $transaction->load(['account', 'category', 'note']);
     }
 
-    public function delete(): void
+    public function delete(TransactionService $transactionService): void
     {
-        $this->transaction->delete();
+        $transactionService->delete($this->transaction);
 
         $this->redirectRoute('transactions.index', navigate: true);
     }

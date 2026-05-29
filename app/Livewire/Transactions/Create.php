@@ -7,7 +7,7 @@ use App\Enums\TransactionType;
 use App\Models\Account;
 use App\Models\Category;
 use App\Models\Note;
-use App\Models\Transaction;
+use App\Services\TransactionService;
 use App\Services\TransferService;
 use Livewire\Attributes\Layout;
 use Livewire\Attributes\Title;
@@ -49,7 +49,7 @@ class Create extends Component
         $this->category_id = '';
     }
 
-    public function save(TransferService $service): void
+    public function save(TransferService $transferService, TransactionService $transactionService): void
     {
         if ($this->type === 'transfer') {
             $this->validate([
@@ -61,7 +61,7 @@ class Create extends Component
                 'transacted_at' => 'required|date',
             ]);
 
-            $service->execute([
+            $transferService->execute([
                 'from_account_id' => (int) $this->from_account_id,
                 'to_account_id' => (int) $this->to_account_id,
                 'amount' => (float) $this->amount,
@@ -80,15 +80,11 @@ class Create extends Component
                 'transacted_at' => 'required|date',
             ]);
 
-            $noteModel = $this->note !== ''
-                ? Note::firstOrCreate(['content' => $this->note])
-                : null;
-
-            Transaction::create([
+            $transactionService->create([
                 'type' => TransactionType::from($this->type),
                 'account_id' => (int) $this->account_id,
                 'category_id' => (int) $this->category_id,
-                'note_id' => $noteModel?->id,
+                'note' => $this->note ?: null,
                 'amount' => (float) $this->amount,
                 'description' => $this->description ?: null,
                 'transacted_at' => $this->transacted_at,

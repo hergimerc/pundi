@@ -59,7 +59,7 @@
 - [x] reports.index — monthly summary (income/expense/net), category breakdown, annual trend
 
 ### Services (backend only, no UI yet)
-- [ ] TransactionService — create/update/delete with validation
+- [x] TransactionService — create/update/delete with validation
 - [x] TransferService — (see Transfers above)
 - [x] ReportService
 
