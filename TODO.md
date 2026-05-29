@@ -69,4 +69,4 @@
 - [x] Pagination or infinite scroll on transactions.index for large months
 - [x] Empty states with helpful CTAs (e.g. "No accounts yet — add one")
 - [x] Flash messages on successful save/delete
-- [ ] Confirm dialog before deleting any record
+- [x] Confirm dialog before deleting any record
