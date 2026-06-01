@@ -187,7 +187,7 @@
                                 @foreach ($rowCats as $cat)
                                     <div
                                         @if ($cat->children->isNotEmpty())
-                                            @click="expandedId = expandedId === {{ $cat->id }} ? null : {{ $cat->id }}"
+                                            @click="if (expandedId === {{ $cat->id }}) { $wire.set('category_id', '{{ $cat->id }}'); showPicker = false; expandedId = null; } else { expandedId = {{ $cat->id }}; }"
                                         @else
                                             @click="$wire.set('category_id', '{{ $cat->id }}'); showPicker = false; expandedId = null"
                                         @endif

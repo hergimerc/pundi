@@ -47,6 +47,12 @@ class Edit extends Component
 
     public array $newAttachments = [];
 
+    public bool $showCategoryModal = false;
+
+    public string $newCategoryName = '';
+
+    public string $newCategoryParentId = '';
+
     public function mount(Transaction $transaction): void
     {
         $this->transaction = $transaction->load('attachments');
@@ -62,6 +68,37 @@ class Edit extends Component
     public function updatedType(): void
     {
         $this->category_id = '';
+        $this->newCategoryParentId = '';
+    }
+
+    public function openCategoryModal(): void
+    {
+        $this->newCategoryName = '';
+        $this->newCategoryParentId = '';
+        $this->showCategoryModal = true;
+    }
+
+    public function createCategory(): void
+    {
+        $this->validate([
+            'newCategoryName' => 'required|string|max:255',
+            'newCategoryParentId' => 'nullable|exists:categories,id',
+        ]);
+
+        $categoryType = $this->type === 'income' ? CategoryType::Income : CategoryType::Expense;
+
+        $category = Category::create([
+            'name' => $this->newCategoryName,
+            'type' => $categoryType,
+            'parent_id' => $this->newCategoryParentId !== '' ? (int) $this->newCategoryParentId : null,
+            'sort_order' => 0,
+        ]);
+
+        $this->category_id = (string) $category->id;
+        $this->showCategoryModal = false;
+        $this->newCategoryName = '';
+        $this->newCategoryParentId = '';
+        $this->dispatch('category-created');
     }
 
     public function removeAttachment(int $id, TransactionService $transactionService): void
