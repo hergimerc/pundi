@@ -114,27 +114,178 @@
             </div>
         @else
             {{-- Category --}}
-            <div>
+            @php
+                $selectedCategoryName = null;
+                if ($category_id !== '') {
+                    foreach ($categories as $_cat) {
+                        if ((string) $_cat->id === $category_id) {
+                            $selectedCategoryName = $_cat->name;
+                            break;
+                        }
+                        foreach ($_cat->children as $_child) {
+                            if ((string) $_child->id === $category_id) {
+                                $selectedCategoryName = $_child->name;
+                                break 2;
+                            }
+                        }
+                    }
+                }
+            @endphp
+
+            <div x-data="{ showPicker: false, expandedId: null }"
+                x-on:category-created.window="showPicker = false; expandedId = null">
+
                 <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Category</label>
-                <select wire:model="category_id"
-                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
-                    <option value="">Select category</option>
-                    @foreach ($categories as $parent)
-                        @if ($parent->children->isNotEmpty())
-                            <optgroup label="{{ $parent->name }}">
-                                @foreach ($parent->children as $child)
-                                    <option value="{{ $child->id }}">{{ $child->name }}</option>
-                                @endforeach
-                            </optgroup>
-                        @else
-                            <option value="{{ $parent->id }}">{{ $parent->name }}</option>
-                        @endif
-                    @endforeach
-                </select>
+
+                {{-- Trigger --}}
+                <button type="button" @click="showPicker = true"
+                    class="w-full px-4 py-3 rounded-xl bg-white dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-sm text-left flex items-center justify-between gap-2 focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                    <span class="{{ $selectedCategoryName ? 'text-zinc-900 dark:text-zinc-100' : 'text-zinc-400 dark:text-zinc-500' }}">
+                        {{ $selectedCategoryName ?? 'Select category' }}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="size-4 text-zinc-400 shrink-0" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+
                 @error('category_id')
                     <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
                 @enderror
+
+                {{-- Half-page bottom sheet picker --}}
+                <div x-show="showPicker" style="display:none" class="fixed inset-0 z-50">
+                    {{-- Backdrop --}}
+                    <div class="absolute inset-0 bg-black/40" @click="showPicker = false; expandedId = null"></div>
+
+                    {{-- Sheet --}}
+                    <div class="absolute bottom-0 left-0 right-0 h-1/2 flex flex-col bg-zinc-50 dark:bg-zinc-950 rounded-t-2xl overflow-hidden shadow-2xl">
+
+                    {{-- Header --}}
+                    <div class="flex items-center justify-between px-5 py-4 bg-zinc-900 dark:bg-black shrink-0">
+                        <span class="text-base font-semibold text-white">Category</span>
+                        <div class="flex items-center gap-5">
+                            <button type="button" wire:click="openCategoryModal" title="New category"
+                                class="text-white/70 hover:text-white transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-5" viewBox="0 0 20 20" fill="currentColor">
+                                    <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                                </svg>
+                            </button>
+                            <button type="button" @click="showPicker = false; expandedId = null"
+                                class="text-white/70 hover:text-white transition">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="size-6" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    {{-- Category grid --}}
+                    <div class="flex-1 overflow-y-auto">
+                        <div class="grid grid-cols-3 border-t border-l border-zinc-200 dark:border-zinc-800">
+                            @foreach ($categories->chunk(3) as $rowCats)
+                                {{-- Parent cells --}}
+                                @foreach ($rowCats as $cat)
+                                    <div
+                                        @if ($cat->children->isNotEmpty())
+                                            @click="expandedId = expandedId === {{ $cat->id }} ? null : {{ $cat->id }}"
+                                        @else
+                                            @click="$wire.set('category_id', '{{ $cat->id }}'); showPicker = false; expandedId = null"
+                                        @endif
+                                        class="flex flex-col items-center justify-center py-6 px-3 cursor-pointer text-center border-r border-b border-zinc-200 dark:border-zinc-800 select-none active:bg-zinc-100 dark:active:bg-zinc-800 transition-colors">
+                                        <span class="text-sm font-medium leading-tight"
+                                            :class="expandedId === {{ $cat->id }} ? 'text-orange-400' : 'text-zinc-800 dark:text-zinc-200'">
+                                            {{ $cat->name }}
+                                        </span>
+                                        @if ($cat->children->isNotEmpty())
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="size-3 mt-2 text-zinc-400 transition-transform duration-150"
+                                                :class="expandedId === {{ $cat->id }} ? '-rotate-180' : ''"
+                                                viewBox="0 0 20 20" fill="currentColor">
+                                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+                                            </svg>
+                                        @endif
+                                    </div>
+                                @endforeach
+
+                                {{-- Pad row to 3 columns --}}
+                                @for ($pad = $rowCats->count(); $pad < 3; $pad++)
+                                    <div class="border-r border-b border-zinc-200 dark:border-zinc-800"></div>
+                                @endfor
+
+                                {{-- Children of each parent in this row --}}
+                                @foreach ($rowCats as $cat)
+                                    @if ($cat->children->isNotEmpty())
+                                        @foreach ($cat->children->chunk(3) as $childRow)
+                                            @foreach ($childRow as $child)
+                                                <div x-show="expandedId === {{ $cat->id }}" style="display:none"
+                                                    @click="$wire.set('category_id', '{{ $child->id }}'); showPicker = false; expandedId = null"
+                                                    class="flex items-center justify-center py-5 px-3 cursor-pointer text-sm text-center border-r border-b border-zinc-200 dark:border-zinc-800 select-none text-zinc-500 dark:text-zinc-400 active:bg-zinc-100 dark:active:bg-zinc-800 transition-colors">
+                                                    {{ $child->name }}
+                                                </div>
+                                            @endforeach
+                                            @for ($childPad = $childRow->count(); $childPad < 3; $childPad++)
+                                                <div x-show="expandedId === {{ $cat->id }}" style="display:none"
+                                                    class="border-r border-b border-zinc-200 dark:border-zinc-800"></div>
+                                            @endfor
+                                        @endforeach
+                                    @endif
+                                @endforeach
+                            @endforeach
+                        </div>
+                    </div>
+                    </div>{{-- /sheet --}}
+                </div>{{-- /backdrop+sheet wrapper --}}
             </div>
+
+            {{-- Quick-create category modal (overlays the picker) --}}
+            @if ($showCategoryModal)
+                <div class="fixed inset-0 z-[60] flex items-end sm:items-center justify-center p-4"
+                    x-data x-init="$el.querySelector('[data-modal]').focus()">
+                    <div class="absolute inset-0 bg-black/40" wire:click="$set('showCategoryModal', false)"></div>
+                    <div data-modal tabindex="-1"
+                        class="relative w-full max-w-sm bg-white dark:bg-zinc-900 rounded-2xl shadow-xl p-6 space-y-4">
+                        <h2 class="text-sm font-semibold text-zinc-900 dark:text-zinc-100">New Category</h2>
+
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">Name</label>
+                            <input type="text" wire:model="newCategoryName" maxlength="255" autofocus
+                                class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500"
+                                placeholder="e.g. Transport" />
+                            @error('newCategoryName')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-medium text-zinc-500 dark:text-zinc-400 mb-1.5">
+                                Parent <span class="text-zinc-300 dark:text-zinc-600 font-normal">(optional)</span>
+                            </label>
+                            <select wire:model="newCategoryParentId"
+                                class="w-full px-4 py-3 rounded-xl bg-zinc-50 dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-zinc-900 dark:text-zinc-100 text-sm focus:outline-none focus:ring-2 focus:ring-zinc-400 dark:focus:ring-zinc-500">
+                                <option value="">No parent (top-level)</option>
+                                @foreach ($categories as $cat)
+                                    <option value="{{ $cat->id }}">{{ $cat->name }}</option>
+                                @endforeach
+                            </select>
+                            @error('newCategoryParentId')
+                                <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                            @enderror
+                        </div>
+
+                        <div class="flex gap-3 pt-1">
+                            <button type="button" wire:click="$set('showCategoryModal', false)"
+                                class="flex-1 py-2.5 rounded-xl border border-zinc-200 dark:border-zinc-700 text-sm text-zinc-600 dark:text-zinc-400 hover:bg-zinc-50 dark:hover:bg-zinc-800 transition">
+                                Cancel
+                            </button>
+                            <button type="button" wire:click="createCategory"
+                                class="flex-1 py-2.5 rounded-xl bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 text-sm font-semibold hover:bg-zinc-700 dark:hover:bg-zinc-300 transition">
+                                <span wire:loading.remove wire:target="createCategory">Save</span>
+                                <span wire:loading wire:target="createCategory">Saving…</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            @endif
 
             {{-- Account --}}
             <div>
